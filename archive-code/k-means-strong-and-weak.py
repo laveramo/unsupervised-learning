@@ -18,7 +18,7 @@ from sklearn.metrics import silhouette_score
 # Exemple :  k-Means Clustering
 
 path = './artificial/'
-name="2sp2glob.arff"
+name="2d-20c-no0.arff"
 
 #path_out = './fig/'
 databrut = arff.loadarff(open(path+str(name), 'r'))
@@ -41,7 +41,7 @@ plt.title("Donnees initiales : "+ str(name))
 plt.show()
 
 silhouette_scores = []
-clusters = range(2,10)
+clusters = range(2,18)
 # Run clustering method for a given number of clusters
 print("------------------------------------------------------")
 for k in clusters:
@@ -56,22 +56,31 @@ for k in clusters:
     centroids = model.cluster_centers_
     silhouette_avg = silhouette_score(datanp, labels)
     silhouette_scores.append(silhouette_avg)
-    #plt.figure(figsize=(6, 6))
-    #plt.scatter(f0, f1, c=labels, s=8)
-    #plt.scatter(centroids[:, 0],centroids[:, 1], marker="x", s=50, linewidths=3, color="red")
-    #plt.title("Données après clustering : "+ str(name) + " - Nb clusters ="+ str(k))
-    #plt.savefig(path_out+"Plot-kmeans-code1-"+str(name)+"-cluster.jpg",bbox_inches='tight', pad_inches=0.1)
-    #plt.show()
-
     print("nb clusters =",k,", nb iter =",iteration, ", silhouette score = ",silhouette_avg, ", runtime = ", round((tps2 - tps1)*1000,2),"ms")
     #print("labels", labels)
 
+solution = max(silhouette_scores)
+final_clusters = clusters[silhouette_scores.index(solution)]
+print("Best solution found with ", final_clusters, " clusters and silhouette score of ", solution)
+#
+model = cluster.KMeans(n_clusters=final_clusters, init='k-means++', n_init=1)
+model.fit(datanp)
+labels = model.labels_
+# informations sur le clustering obtenu
+iteration = model.n_iter_
+centroids = model.cluster_centers_
+plt.figure(figsize=(6, 6))
+plt.scatter(f0, f1, c=labels, s=8)
+plt.scatter(centroids[:, 0],centroids[:, 1], marker="x", s=50, linewidths=3, color="red")
+plt.title("Données après clustering : "+ str(name) + " - Nb clusters ="+ str(final_clusters))
+#plt.savefig(path_out+"Plot-kmeans-code1-"+str(name)+"-cluster.jpg",bbox_inches='tight', pad_inches=0.1)
+plt.show()
 # from sklearn.metrics.pairwise import euclidean_distances
 # dists = euclidean_distances(centroids)
 # print(dists)
-plt.plot(clusters, silhouette_scores, "b:o")
-plt.title("Silhouette value vs clusters")
-plt.xlabel("# clusters")
-plt.ylabel("Silhouette value")
-plt.show()
+# plt.plot(clusters, silhouette_scores, "b:o")
+# plt.title("Silhouette value vs clusters")
+# plt.xlabel("# clusters")
+# plt.ylabel("Silhouette value")
+# plt.show()
 
