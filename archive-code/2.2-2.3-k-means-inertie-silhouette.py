@@ -63,3 +63,20 @@ plt.title("Silhouette value vs clusters")
 plt.xlabel("# clusters")
 plt.ylabel("Silhouette value")
 plt.show()
+
+# choice of the best solution based on silhouette score
+solution = max(silhouette_scores)
+final_clusters = clusters[silhouette_scores.index(solution)]
+print("Best solution found with ", final_clusters, " clusters and silhouette score of ", solution)
+#
+model = cluster.KMeans(n_clusters=final_clusters, init='k-means++', n_init=1)
+model.fit(datanp)
+labels = model.labels_
+# informations sur le clustering obtenu
+iteration = model.n_iter_
+centroids = model.cluster_centers_
+plt.figure(figsize=(6, 6))
+plt.scatter(f0, f1, c=labels, s=8)
+plt.scatter(centroids[:, 0],centroids[:, 1], marker="x", s=50, linewidths=3, color="red")
+plt.title("Données après clustering : "+ str(name) + " - Nb clusters ="+ str(final_clusters))
+plt.show()
